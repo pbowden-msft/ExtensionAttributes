@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><extensionAttribute>
+<displayName>MAU_CheckMethod</displayName>
+<displayInCategory>Extension Attributes</displayInCategory>
+<description>Reports the effective checking method of Microsoft AutoUpdate for Mac</description>
+<dataType>string</dataType>
+<scriptContentsMac>#!/bin/sh
+if [ -d /Library/Application\ Support/Microsoft/MAU2.0/Microsoft\ AutoUpdate.app ]; then
+    HowToCheck=`python -c "from Foundation import CFPreferencesCopyAppValue; print CFPreferencesCopyAppValue('HowToCheck', 'com.microsoft.autoupdate2')"`
+    echo "&lt;result&gt;$HowToCheck&lt;/result&gt;"
+else
+    echo "&lt;result&gt;Not installed&lt;/result&gt;"
+fi
+
+exit 0</scriptContentsMac>
+<scriptContentsWindows/>
+</extensionAttribute>
