@@ -1,2 +1,2 @@
-# ExtendedAttributes
-Jamf Pro Extended Attribute Library
+# ExtensionAttributes
+Jamf Pro Extension Attribute Library
