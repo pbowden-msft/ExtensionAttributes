@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><extensionAttribute>
+<displayName>Excel_Version</displayName>
+<displayInCategory>Extension Attributes</displayInCategory>
+<description>Reports the installed version of Microsoft Excel for Mac</description>
+<dataType>string</dataType>
+<scriptContentsMac>#!/bin/sh
+if [ -d /Applications/Microsoft\ Excel.app ]; then
+    AppVersion=`/usr/bin/defaults read /Applications/Microsoft\ Excel.app/Contents/Info.plist CFBundleShortVersionString`
+    echo "&lt;result&gt;$AppVersion&lt;/result&gt;"
+else
+    echo "&lt;result&gt;Not installed&lt;/result&gt;"
+fi
+
+exit 0</scriptContentsMac>
+<scriptContentsWindows/>
+</extensionAttribute>

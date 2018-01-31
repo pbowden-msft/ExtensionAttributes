@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><extensionAttribute>
+<displayName>MAU_Version</displayName>
+<displayInCategory>Extension Attributes</displayInCategory>
+<description>Reports the installed version of Microsoft AutoUpdate for Mac</description>
+<dataType>string</dataType>
+<scriptContentsMac>#!/bin/sh
+if [ -d /Library/Application\ Support/Microsoft/MAU2.0/Microsoft\ AutoUpdate.app ]; then
+    AppVersion=`/usr/bin/defaults read /Library/Application\ Support/Microsoft/MAU2.0/Microsoft\ AutoUpdate.app/Contents/Info.plist CFBundleShortVersionString`
+    echo "&lt;result&gt;$AppVersion&lt;/result&gt;"
+else
+    echo "&lt;result&gt;Not installed&lt;/result&gt;"
+fi
+
+exit 0</scriptContentsMac>
+<scriptContentsWindows/>
+</extensionAttribute>
