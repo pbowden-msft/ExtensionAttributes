@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><extensionAttribute>
+<displayName>Outlook REST Calendar Sync</displayName>
+<description/>
+<dataType>string</dataType>
+<scriptContentsMac>#!/bin/sh
+
+# Functions
+function isRESTEnabled {
+	# creates a list of local usernames with UIDs above 500 (not hidden)
+	userList=$( /usr/bin/dscl /Local/Default -list /Users uid | /usr/bin/awk '$2 &gt;= 501 { print $1 }' )
+	
+	while IFS= read aUser
+	do
+		# get the user's home folder path
+		HOMEPATH=$( eval /bin/echo ~$aUser )
+
+		# grab the device id from the Office365ServiceV2 log
+		local RESULT=$(/usr/bin/grep -m1 'cv4oz' $HOMEPATH/Library/Containers/com.microsoft.Outlook/Data/Library/Caches/Microsoft/uls/com.microsoft.Outlook/logs/*.log | grep '"IsSetupForRESTCalendarSync": true')
+	
+		# checks to see if we got a hit
+		if [ "$RESULT" != "" ]; then
+			REST="True"
+		else
+			REST="False"
+		fi
+	done &lt;&lt;&lt; "$userList"
+	
+	/bin/echo "$REST"
+}
+
+## Main
+RESTENABLED=$(isRESTEnabled)
+/bin/echo "&lt;result&gt;$RESTENABLED&lt;/result&gt;"
+
+exit 0</scriptContentsMac>
+<scriptContentsWindows/>
+</extensionAttribute>
