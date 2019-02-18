@@ -14,7 +14,7 @@ function isRESTEnabled {
 		# get the user's home folder path
 		HOMEPATH=$( eval /bin/echo ~$aUser )
 
-		# grab the device id from the Office365ServiceV2 log
+		# parse the Outlook log file
 		local RESULT=$(/usr/bin/grep -m1 'cv4oz' $HOMEPATH/Library/Containers/com.microsoft.Outlook/Data/Library/Caches/Microsoft/uls/com.microsoft.Outlook/logs/*.log | grep '"IsSetupForRESTCalendarSync": true')
 	
 		# checks to see if we got a hit
