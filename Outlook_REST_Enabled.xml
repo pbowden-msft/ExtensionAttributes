@@ -2,36 +2,62 @@
 <displayName>Outlook REST Calendar Sync</displayName>
 <description/>
 <dataType>string</dataType>
-<scriptContentsMac>#!/bin/sh
+<scriptContentsMac>
+#!/usr/bin/python
 
-# Functions
-function isRESTEnabled {
-	# creates a list of local usernames with UIDs above 500 (not hidden)
-	userList=$( /usr/bin/dscl /Local/Default -list /Users uid | /usr/bin/awk '$2 &gt;= 501 { print $1 }' )
-	
-	while IFS= read aUser
-	do
-		# get the user's home folder path
-		HOMEPATH=$( eval /bin/echo ~$aUser )
+import glob
+import HTMLParser
+import os
+import re
+import sys
+from os.path import expanduser
+from SystemConfiguration import SCDynamicStoreCopyConsoleUser
 
-		# parse the Outlook log file
-		local RESULT=$(/usr/bin/grep -m1 'cv4oz' $HOMEPATH/Library/Containers/com.microsoft.Outlook/Data/Library/Caches/Microsoft/uls/com.microsoft.Outlook/logs/*.log | grep '"IsSetupForRESTCalendarSync": true')
-	
-		# checks to see if we got a hit
-		if [ "$RESULT" != "" ]; then
-			REST="True"
-		else
-			REST="False"
-		fi
-	done &lt;&lt;&lt; "$userList"
-	
-	/bin/echo "$REST"
-}
+def get_console_user():
+    username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]
+    username = [username,""][username in [u"loginwindow", None, u""]]
+    return username
 
-## Main
-RESTENABLED=$(isRESTEnabled)
-/bin/echo "&lt;result&gt;$RESTENABLED&lt;/result&gt;"
+def does_folder_exist(path):
+    return os.path.isdir(path)
 
-exit 0</scriptContentsMac>
+def get_home_folder(username):
+    home_folder = expanduser('~' + str(username))
+    if does_folder_exist(home_folder):
+        return home_folder
+    return None
+
+def get_outlook_log_filename(home_folder):
+    log_folder = os.path.join(home_folder, 'Library/Containers/com.microsoft.Outlook/Data/Library/Caches/Microsoft/uls/com.microsoft.Outlook/logs')
+    if does_folder_exist(log_folder):
+        log_files = glob.glob(log_folder + '/*.log')
+        if len(log_files) != 0:
+            return str(log_files[0])
+    return None
+
+def grep_outlook_log(filename):
+    with open(filename) as log_file:
+        for line in log_file:
+            line = re.findall(r'"IsSetupForRESTCalendarSync": true', line)
+            if line:
+                return 'True'
+    return 'False'
+
+## MAIN
+console_user = get_console_user()
+rest_enabled = 'Unknown'
+if console_user:
+    home_folder = get_home_folder(console_user)
+    if home_folder:
+        outlook_log = get_outlook_log_filename(home_folder)
+        if outlook_log:
+            rest_enabled = grep_outlook_log(outlook_log)
+
+html_parser = HTMLParser.HTMLParser()
+result = html_parser.unescape('&lt;result&gt;') + str(rest_enabled) + html_parser.unescape('&lt;/result&gt;')
+print(result)
+
+sys.exit(0)
+</scriptContentsMac>
 <scriptContentsWindows/>
 </extensionAttribute>
