@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><extensionAttribute>
+<displayName>Outlook Zoom Version</displayName>
+<description/>
+<dataType>string</dataType>
+<scriptContentsMac>
+#!/usr/bin/python
+
+import glob
+import HTMLParser
+import os
+import re
+import sys
+from os.path import expanduser
+from SystemConfiguration import SCDynamicStoreCopyConsoleUser
+
+def get_console_user():
+    username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]
+    username = [username,""][username in [u"loginwindow", None, u""]]
+    return username
+
+def does_folder_exist(path):
+    return os.path.isdir(path)
+
+def get_home_folder(username):
+    home_folder = expanduser('~' + str(username))
+    if does_folder_exist(home_folder):
+        return home_folder
+    return None
+
+def get_outlook_log_filename(home_folder):
+    log_folder = os.path.join(home_folder, 'Library/Containers/com.microsoft.Outlook/Data/Library/Caches/Microsoft/uls/com.microsoft.Outlook/logs')
+    if does_folder_exist(log_folder):
+        log_files = glob.glob(log_folder + '/*.log')
+        if len(log_files) != 0:
+            return str(log_files[0])
+    return None
+
+def grep_outlook_log(filename):
+    with open(filename) as log_file:
+        for line in log_file:
+            zoom = re.findall(r'Zoom Plugin Version', line)
+            valid = re.findall(r'"ZoomPlugInVersion"', line)
+            invalid = re.findall(r'Invalid Zoom Plugin Version found', line)
+            ver = re.findall(r'"([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})"', line)
+            if zoom and invalid:
+                return str('[blocked]')
+            if zoom and ver and valid:
+                return str(ver[0])
+    return 'Not present'
+
+## MAIN
+console_user = get_console_user()
+zoom_version = 'Not present'
+if console_user:
+    home_folder = get_home_folder(console_user)
+    if home_folder:
+        outlook_log = get_outlook_log_filename(home_folder)
+        if outlook_log:
+            zoom_version = grep_outlook_log(outlook_log)
+
+html_parser = HTMLParser.HTMLParser()
+result = html_parser.unescape('&lt;result&gt;') + str(zoom_version) + html_parser.unescape('&lt;/result&gt;')
+print(result)
+
+sys.exit(0)
+</scriptContentsMac>
+<scriptContentsWindows/>
+</extensionAttribute>
