@@ -110,15 +110,13 @@ function DetectO365License {
 		homePath=$( eval /bin/echo ~$aUser )
 	
 		# list of potential Office 365 activation files
-		O365SUBMAIN="$O365PRODUCT/com.microsoft.Office365.plist"
-		O365SUBBAK1="$O365PRODUCT/com.microsoft.e0E2OUQxNUY1LTAxOUQtNDQwNS04QkJELTAxQTI5M0JBOTk4O.plist"
-		O365SUBBAK2="$O365PRODUCT/e0E2OUQxNUY1LTAxOUQtNDQwNS04QkJELTAxQTI5M0JBOTk4O"
-		O365SUBMAINB="$O365PRODUCT/com.microsoft.Office365V2.plist"
-		O365SUBBAK1B="$O365PRODUCT/com.microsoft.O4kTOBJ0M5ITQxATLEJkQ40SNwQDNtQUOxATL1YUNxQUO2E0e.plist"
-		O365SUBBAK2B="$O365PRODUCT/O4kTOBJ0M5ITQxATLEJkQ40SNwQDNtQUOxATL1YUNxQUO2E0e"
+		O365SUBMAIN="$homePath/Library/Group Containers/UBF8T346G9.Office/com.microsoft.Office365.plist"
+		O365SUBNEW="$homePath/Library/Group Containers/UBF8T346G9.Office/com.microsoft.Office365V2.plist"
+		O365SUBBAK1="$homePath/Library/Group Containers/UBF8T346G9.Office/com.microsoft.e0E2OUQxNUY1LTAxOUQtNDQwNS04QkJELTAxQTI5M0JBOTk4O.plist"
+		O365SUBBAK2="$homePath/Library/Group Containers/UBF8T346G9.Office/e0E2OUQxNUY1LTAxOUQtNDQwNS04QkJELTAxQTI5M0JBOTk4O" # hidden file
 	
 		# checks to see if an O365 subscription license file is present for each user
-		if [ -f "$O365SUBMAIN" ] || [ -f "$O365SUBBAK1" ] || [ -f "$O365SUBBAK2" ] || [ -f "$O365SUBMAINB" ] || [ -f "$O365SUBBAK1B" ] || [ -f "$O365SUBBAK2B" ] || [ -f "$VNEXTLICENSEPATH" ]; then
+		if [[ -f "$O365SUBMAIN" || -f "$O365SUBNEW" || -f "$O365SUBBAK1" || -f "$O365SUBBAK2" ]]; then
 			activations=$((activations+1))
 		fi
 	done <<< "$userList"
