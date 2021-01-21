@@ -15,7 +15,7 @@
 	bill@talkingmoose.net
 	https://github.com/talkingmoose/Casper-Scripts
 
-	Last updated: September 18, 2018
+	Last updated: January 21, 2021
 	Originally posted: January 7, 2017
 	
 	Purpose: Use this script as part of an extension attribute in Jamf
@@ -110,12 +110,13 @@ function DetectO365License {
 		homePath=$( eval /bin/echo ~$aUser )
 	
 		# list of potential Office 365 activation files
-		O365SUBMAIN="$homePath/Library/Group Containers/UBF8T346G9.Office/com.microsoft.Office365.plist"
-		O365SUBBAK1="$homePath/Library/Group Containers/UBF8T346G9.Office/com.microsoft.e0E2OUQxNUY1LTAxOUQtNDQwNS04QkJELTAxQTI5M0JBOTk4O.plist"
-		O365SUBBAK2="$homePath/Library/Group Containers/UBF8T346G9.Office/e0E2OUQxNUY1LTAxOUQtNDQwNS04QkJELTAxQTI5M0JBOTk4O" # hidden file
+		O365SUBMAIN="$homePath/Library/Group Containers/UBF8T346G9.Office/com.microsoft.Office365V2.plist"
+		O365SUBNEW="$homePath/Library/Group Containers/UBF8T346G9.Office/Licenses/5"
+		O365SUBBAK1="$homePath/Library/Group Containers/UBF8T346G9.Office/com.microsoft.O4kTOBJ0M5ITQxATLEJkQ40SNwQDNtQUOxATL1YUNxQUO2E0e.plist"
+		O365SUBBAK2="$homePath/Library/Group Containers/UBF8T346G9.Office/O4kTOBJ0M5ITQxATLEJkQ40SNwQDNtQUOxATL1YUNxQUO2E0e" # hidden file
 	
 		# checks to see if an O365 subscription license file is present for each user
-		if [[ -f "$O365SUBMAIN" || -f "$O365SUBBAK1" || -f "$O365SUBBAK2" ]]; then
+		if [[ -f "$O365SUBMAIN" || -f "$O365SUBBAK1" || -f "$O365SUBBAK2" || -d "$O365SUBNEW" ]]; then
 			activations=$((activations+1))
 		fi
 	done <<< "$userList"
