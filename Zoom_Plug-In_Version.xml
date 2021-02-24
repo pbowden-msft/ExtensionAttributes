@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?><extensionAttribute>
+<displayName>Zoom_Plug-In_Version</displayName>
+<displayInCategory>Extension Attributes</displayInCategory>
+<description>Reports the installed version of Zoom Injection Plug-In</description>
+<dataType>string</dataType>
+<scriptContentsMac>#!/bin/zsh
+if [ -d /Library/Application\ Support/ZoomOutlookPlugin/zOutlookPluginAgent.app ]; then
+    ZoomVersion=`/usr/bin/defaults read /Library/Application\ Support/ZoomOutlookPlugin/zOutlookPluginAgent.app/Contents/Info.plist CFBundleVersion`
+    echo "&lt;result&gt;$ZoomVersion&lt;/result&gt;"
+elif [ -d /Users/Shared/ZoomOutlookPlugin/zOutlookPluginAgent.app ]; then
+    ZoomVersion=`/usr/bin/defaults read /Users/Shared/ZoomOutlookPlugin/zOutlookPluginAgent.app/Contents/Info.plist CFBundleVersion`
+    echo "&lt;result&gt;$ZoomVersion&lt;/result&gt;"
+else
+    echo "&lt;result&gt;Not installed&lt;/result&gt;"
+fi
+
+exit 0</scriptContentsMac>
+<scriptContentsWindows/>
+</extensionAttribute>
