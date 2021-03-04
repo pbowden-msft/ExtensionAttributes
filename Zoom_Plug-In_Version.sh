@@ -11,3 +11,5 @@ elif [ -d /Users/Shared/ZoomOutlookPlugin/zOutlookPluginAgent.app ]; then
 else
     echo "<result>Not installed</result>"
 fi
+
+exit 0
