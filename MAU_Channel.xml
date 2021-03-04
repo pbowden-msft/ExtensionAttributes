@@ -3,22 +3,22 @@
 <displayInCategory>Extension Attributes</displayInCategory>
 <description>Reports the effective Channel of Microsoft AutoUpdate for Mac</description>
 <dataType>string</dataType>
-<scriptContentsMac>#!/bin/sh
+<scriptContentsMac>#!/bin/zsh
 if [ -d /Library/Application\ Support/Microsoft/MAU2.0/Microsoft\ AutoUpdate.app ]; then
     ChannelName=`python -c "from Foundation import CFPreferencesCopyAppValue; print CFPreferencesCopyAppValue('ChannelName', 'com.microsoft.autoupdate2')"`
-    if [ "$ChannelName" == "External" ]; then
-    	echo "&lt;result&gt;Insider Slow&lt;/result&gt;"
-    elif [ "$ChannelName" == "InsiderFast" ]; then
-    	echo "&lt;result&gt;Insider Fast&lt;/result&gt;"
-    elif [ "$ChannelName" == "Internal" ]; then
+    if [ "$ChannelName" = "External" ] || [ "$ChannelName" = "Preview" ]; then
+    	echo "&lt;result&gt;Current Channel Preview&lt;/result&gt;"
+    elif [ "$ChannelName" = "InsiderFast" ] [ "$ChannelName" = "Beta" ]; then
+    	echo "&lt;result&gt;Beta Channel&lt;/result&gt;"
+    elif [ "$ChannelName" = "Internal" ]; then
     	echo "&lt;result&gt;Microsoft&lt;/result&gt;"
-    elif [ "$ChannelName" == "Dogfood" ]; then
+    elif [ "$ChannelName" = "Dogfood" ]; then
     	echo "&lt;result&gt;Dogfood&lt;/result&gt;"
-    elif [ "$ChannelName" == "Custom" ]; then
+    elif [ "$ChannelName" = "Custom" ]; then
     	ManifestServer=`python -c "from Foundation import CFPreferencesCopyAppValue; print CFPreferencesCopyAppValue('ManifestServer', 'com.microsoft.autoupdate2')"`
     	echo "&lt;result&gt;Custom - $ManifestServer&lt;/result&gt;"
     else
-    	echo "&lt;result&gt;Production&lt;/result&gt;"
+    	echo "&lt;result&gt;Current Channel&lt;/result&gt;"
     fi
 else
     echo "&lt;result&gt;Not installed&lt;/result&gt;"
