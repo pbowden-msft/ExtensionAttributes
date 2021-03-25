@@ -26,17 +26,14 @@ SetHomeFolder() {
 LoggedInUser=$(GetLoggedInUser)
 SetHomeFolder "$LoggedInUser"
 
-# Find out if the login.keychain is in the path - if not, add it
-KeychainHasLogin=$(/usr/bin/sudo -u $LoggedInUser /usr/bin/security list-keychains | grep 'login.keychain')
-if [ "$KeychainHasLogin" = "" ]; then
-	/usr/bin/sudo -u $LoggedInUser /usr/bin/security list-keychains -s "$HOME/Library/Keychains/login.keychain-db"
-fi
+# Search the keychain of the logged in user
+/usr/bin/security list-keychains -s "$HOME/Library/Keychains/login.keychain-db"
 
 # Get today's date in the 8-digit format of YYYYMMDD
 DateToday=$(date "+%Y%m%d")
 
 # Get the creation date of the keychain entry
-KeychainCreationDate=$(/usr/bin/sudo -u $LoggedInUser /usr/bin/security find-generic-password -l 'com.microsoft.adalcache' | grep 'cdat' | cut -d '"' -f4)
+KeychainCreationDate=$(/usr/bin/security find-generic-password -l 'com.microsoft.adalcache' | grep 'cdat' | cut -d '"' -f4)
 
 # Trim the keychain date into the 8-digit format of YYMMDD
 TrimmedCreationDate=${KeychainCreationDate:0:8}
