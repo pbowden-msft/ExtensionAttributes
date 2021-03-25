@@ -30,7 +30,7 @@ SetHomeFolder "$LoggedInUser"
 /usr/bin/security list-keychains -s "$HOME/Library/Keychains/login.keychain-db"
 
 # Get today's date in the 8-digit format of YYYYMMDD
-DateToday=$(date "+%Y%m%d")
+DateToday=$(/bin/date "+%Y%m%d")
 
 # Get the creation date of the keychain entry
 KeychainCreationDate=$(/usr/bin/security find-generic-password -l 'com.microsoft.adalcache' | grep 'cdat' | cut -d '"' -f4)
@@ -42,8 +42,10 @@ if [ "$TrimmedCreationDate" = "" ]; then
 	# Return Not found value if we could not find or parse the keychain entry
     echo "<result>Not found</result>"
 else
-    # Perform simple math to calculate the delta in days between today's date and creation date
-    (( Delta = $DateToday - $TrimmedCreationDate ))
+    # Calculate the delta in days between today's date and creation date
+    UnixDateToday=$(/bin/date -j -f "%Y%m%d" $DateToday +"%s")
+    UnixTrimmedCreationDate=$(/bin/date -j -f "%Y%m%d" $TrimmedCreationDate +"%s")
+    (( Delta = ($UnixDateToday - $UnixTrimmedCreationDate) / 86400 ))
     echo "<result>$Delta</result>"
 fi
 
