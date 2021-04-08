@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 : <<ABOUT_THIS_SCRIPT
 -----------------------------------------------------------------------
@@ -15,7 +15,7 @@
 	bill@talkingmoose.net
 	https://github.com/talkingmoose/Casper-Scripts
 
-	Last updated: January 21, 2021
+	Last updated: April 7, 2021
 	Originally posted: January 7, 2017
 	
 	Purpose: Use this script as part of an extension attribute in Jamf
@@ -58,12 +58,33 @@ DetectPerpetualLicense() {
 	fi
 }
 
+# Detects single vs. stacked license
+DetectStackedLicense() {
+	if [ -f "$PERPETUALLICENSE" ]; then
+		LINECOUNT=$(/usr/bin/wc -l "$PERPETUALLICENSE" | awk {'print $1'})
+		if [ "$LINECOUNT" = "125" ]; then
+			/bin/echo "Yes"
+		else
+			/bin/echo "No"
+		fi
+	fi
+}
+
 # Determines what type of perpetual license the machine has installed
 PerpetualLicenseType() {
 	if [ -f "$PERPETUALLICENSE" ]; then
-		if /usr/bin/grep -q "A7vRjN2l/dCJHZOm8LKan11/zCYPCRpyChB6lOrgfi" "$PERPETUALLICENSE"; then
-			/bin/echo "Office 2019 Volume License"
+		if /usr/bin/grep -q "Bozo+MzVxzFzbIo+hhzTl43O7w5oMsJ7M3Q4vhvz/j" "$PERPETUALLICENSE"; then
+			/bin/echo "Office 2021 Preview Volume License"
 			return
+		fi
+		if /usr/bin/grep -q "A7vRjN2l/dCJHZOm8LKan11/zCYPCRpyChB6lOrgfi" "$PERPETUALLICENSE"; then
+			if [ "$STACKED" = "Yes" ]; then
+				/bin/echo "Office 2021/2019 Volume License (Stacked)"
+				return
+			else
+				/bin/echo "Office 2019 Volume License"
+				return
+			fi
 		fi
 		if /usr/bin/grep -q "Bozo+MzVxzFzbIo+hhzTl4JKv18WeUuUhLXtH0z36s" "$PERPETUALLICENSE"; then
 			/bin/echo "Office 2019 Preview Volume License"
@@ -121,19 +142,20 @@ DetectO365License() {
 ## Main
 
 PERPETUALPRESENT=$(DetectPerpetualLicense)
+STACKED=$(DetectStackedLicense)
 O365ACTIVATIONS=$(DetectO365License)
 
-if [ "$PERPETUALPRESENT" == "Yes" ] && [ "$O365ACTIVATIONS" ]; then
+if [ "$PERPETUALPRESENT" = "Yes" ] && [ "$O365ACTIVATIONS" ]; then
 	/bin/echo "<result>Volume and Office 365 licenses detected. Only the volume license will be used.</result>"
 
-elif [ "$PERPETUALPRESENT" == "Yes" ]; then
+elif [ "$PERPETUALPRESENT" = "Yes" ]; then
 	LICTYPE=$(PerpetualLicenseType)
 	/bin/echo "<result>$LICTYPE</result>"
 	
 elif [ "$O365ACTIVATIONS" ]; then
 	/bin/echo "<result>Office 365 activations: $O365ACTIVATIONS</result>"
 	
-elif [ "$PERPETUALPRESENT" == "No" ] && [ ! "$O365ACTIVATIONS" ]; then
+elif [ "$PERPETUALPRESENT" = "No" ] && [ ! "$O365ACTIVATIONS" ]; then
 	/bin/echo "<result>No license</result>"
 fi
 
