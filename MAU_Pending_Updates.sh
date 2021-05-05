@@ -6,19 +6,23 @@ autoload is-at-least
 
 CheckMAUVersion() {
 	if [ -d /Library/Application\ Support/Microsoft/MAU2.0/Microsoft\ AutoUpdate.app ]; then
-    	APPVERSION=$(/usr/bin/defaults read /Library/Application\ Support/Microsoft/MAU2.0/Microsoft\ AutoUpdate.app/Contents/Info.plist CFBundleShortVersionString)
-    	if ! is-at-least 4.34 $APPVERSION; then
-		    echo "<result>MAU version is unsupported</result>"
-		    exit 0
+    		APPVERSION=$(/usr/bin/defaults read /Library/Application\ Support/Microsoft/MAU2.0/Microsoft\ AutoUpdate.app/Contents/Info.plist CFBundleShortVersionString)
+    		if ! is-at-least 4.34 $APPVERSION; then
+			echo "<result>MAU version is unsupported</result>"
+			exit 0
 		fi
 	else
-    	echo "<result>MAU is not installed</result>"
-    	exit 0
+    		echo "<result>MAU is not installed</result>"
+    		exit 0
 	fi
 }
 
 GetCloneFolder() {
-	CLONEPATH=$(/usr/bin/find /var/folders -name 'MSauClones')
+	if is-at-least 4.35 $APPVERSION; then
+		CLONEPATH="/Library/Caches/com.microsoft.autoupdate.helper/Clones"
+	else
+		CLONEPATH=$(/usr/bin/find /var/folders -name 'MSauClones')
+	fi
 	echo "$CLONEPATH"
 }
 
