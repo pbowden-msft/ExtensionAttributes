@@ -1,4 +1,5 @@
 #!/bin/zsh
+#set -x
 
 : <<ABOUT_THIS_SCRIPT
 -----------------------------------------------------------------------
@@ -77,6 +78,10 @@ PerpetualLicenseType() {
 			/bin/echo "Office 2021 Preview Volume License"
 			return
 		fi
+		if /usr/bin/grep -q "Bozo+MzVxzFzbIo+hhzTl4xkRZSjOUX8J8nIgpXuMa" "$PERPETUALLICENSE"; then
+			/bin/echo "Office 2021 Volume License"
+			return
+		fi
 		if /usr/bin/grep -q "A7vRjN2l/dCJHZOm8LKan11/zCYPCRpyChB6lOrgfi" "$PERPETUALLICENSE"; then
 			if [ "$STACKED" = "Yes" ]; then
 				/bin/echo "Office 2021/2019 Volume License (Stacked)"
@@ -106,7 +111,7 @@ PerpetualLicenseType() {
 			/bin/echo "Office 2019 Home and Business License"
 			return
 		fi
-		if /usr/bin/grep -q "Bozo+MzVxzFzbIo+hhzTl4j"; then
+		if /usr/bin/grep -q "Bozo+MzVxzFzbIo+hhzTl4j" "$PERPETUALLICENSE"; then
 			/bin/echo "Office 2019 Home and Student License"
 			return
 		fi
