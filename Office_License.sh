@@ -149,12 +149,12 @@ DetectO365License() {
 PERPETUALPRESENT=$(DetectPerpetualLicense)
 STACKED=$(DetectStackedLicense)
 O365ACTIVATIONS=$(DetectO365License)
+LICTYPE=$(PerpetualLicenseType)
 
 if [ "$PERPETUALPRESENT" = "Yes" ] && [ "$O365ACTIVATIONS" ]; then
-	/bin/echo "<result>Volume and Office 365 licenses detected. Only the volume license will be used.</result>"
+	/bin/echo "<result>$LICTYPE and Office 365 licenses detected</result>"
 
 elif [ "$PERPETUALPRESENT" = "Yes" ]; then
-	LICTYPE=$(PerpetualLicenseType)
 	/bin/echo "<result>$LICTYPE</result>"
 	
 elif [ "$O365ACTIVATIONS" ]; then
