@@ -2,8 +2,24 @@
 
 ## Extension Attribute to report which update channel is being used by Microsoft AutoUpdate
 
+## Functions
+function getPrefValue { # $1: domain, $2: key
+     osascript -l JavaScript << EndOfScript
+     ObjC.import('Foundation');
+     ObjC.unwrap($.NSUserDefaults.alloc.initWithSuiteName('$1').objectForKey('$2'))
+EndOfScript
+}
+
+function getPrefIsManaged { # $1: domain, $2: key
+     osascript -l JavaScript << EndOfScript
+     ObjC.import('Foundation')
+     $.CFPreferencesAppValueIsForced(ObjC.wrap('$2'), ObjC.wrap('$1'))
+EndOfScript
+}
+
+## Main
 if [ -d /Library/Application\ Support/Microsoft/MAU2.0/Microsoft\ AutoUpdate.app ]; then
-    ChannelName=`python -c "from Foundation import CFPreferencesCopyAppValue; print CFPreferencesCopyAppValue('ChannelName', 'com.microsoft.autoupdate2')"`
+    ChannelName=$(getPrefValue "com.microsoft.autoupdate2" "ChannelName")
     if [ "$ChannelName" = "External" ] || [ "$ChannelName" = "Preview" ]; then
     	echo "<result>Current Channel Preview</result>"
     elif [ "$ChannelName" = "InsiderFast" ] || [ "$ChannelName" = "Beta" ]; then
@@ -13,7 +29,7 @@ if [ -d /Library/Application\ Support/Microsoft/MAU2.0/Microsoft\ AutoUpdate.app
     elif [ "$ChannelName" = "Dogfood" ]; then
     	echo "<result>Dogfood</result>"
     elif [ "$ChannelName" = "Custom" ]; then
-    	ManifestServer=`python -c "from Foundation import CFPreferencesCopyAppValue; print CFPreferencesCopyAppValue('ManifestServer', 'com.microsoft.autoupdate2')"`
+    	ManifestServer=$(getPrefValue "com.microsoft.autoupdate2" "ManifestServer")
     	echo "<result>Custom - $ManifestServer</result>"
     else
     	echo "<result>Current Channel</result>"
