@@ -1,5 +1,5 @@
 #!/bin/zsh
-
+#set -x
 ## Extension Attribute to report the list of apps that AutoUpdate 4.34 (and later) has ready to install and pending closure of the running version
 
 autoload is-at-least
@@ -18,7 +18,9 @@ CheckMAUVersion() {
 }
 
 GetCloneFolder() {
-	if is-at-least 4.35 $APPVERSION; then
+	if is-at-least 4.50 $APPVERSION; then
+		CLONEPATH="/Library/Caches/com.microsoft.autoupdate.helper/Clones.noindex"
+	elif is-at-least 4.35 $APPVERSION; then
 		CLONEPATH="/Library/Caches/com.microsoft.autoupdate.helper/Clones"
 	else
 		CLONEPATH=$(/usr/bin/find /var/folders -name 'MSauClones')
@@ -33,10 +35,14 @@ CloneFolder=$(GetCloneFolder)
 # Enumerate the apps in the clone folder
 if [ -d "$CloneFolder" ]; then
 	for app in $CloneFolder/**; do
-		APPNAME=$(defaults read "$app/Contents/Info" CFBundleName)
-		APPVER=$(defaults read "$app/Contents/Info" CFBundleShortVersionString)
-		APPSTRING="$APPNAME [$APPVER]"
-		AppList+="$APPSTRING;"
+		CLONEAPPNAME=$(defaults read "$app/Contents/Info" CFBundleName)
+		CLONEAPPVER=$(defaults read "$app/Contents/Info" CFBundleVersion)
+		BASEAPPBUNDLE=$(/usr/bin/basename "$app")
+		INSTALLEDAPPVER=$(defaults read "/Applications/$BASEAPPBUNDLE/Contents/Info" CFBundleVersion)
+		if [[ $CLONEAPPVER != $INSTALLEDAPPVER ]]; then
+			APPSTRING="$CLONEAPPNAME [$CLONEAPPVER]"
+			AppList+="$APPSTRING;"
+		fi
 	done
 	echo "<result>$AppList</result>"
 
