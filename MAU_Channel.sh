@@ -24,6 +24,8 @@ if [ -d /Library/Application\ Support/Microsoft/MAU2.0/Microsoft\ AutoUpdate.app
     	echo "<result>Current Channel Preview</result>"
     elif [ "$ChannelName" = "InsiderFast" ] || [ "$ChannelName" = "Beta" ]; then
     	echo "<result>Beta Channel</result>"
+    elif [ "$ChannelName" = "CurrentThrottle" ]; then
+    	echo "<result>Monthly</result>"
     elif [ "$ChannelName" = "Internal" ]; then
     	echo "<result>Microsoft</result>"
     elif [ "$ChannelName" = "Dogfood" ]; then
