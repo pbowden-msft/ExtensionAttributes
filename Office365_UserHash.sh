@@ -12,7 +12,7 @@ function ReadUserIDHash {
 		HOMEPATH=$( eval /bin/echo ~$aUser )
 
 		# pull the user hash from suite-wide defaults
-		local RESULT=$(/usr/bin/defaults read $HOMEPATH/Library/Preferences/com.microsoft.office TenantAssociationOidKey)
+		local RESULT=$(/usr/bin/defaults read $HOMEPATH/Library/Preferences/com.microsoft.office OCPS-LastSuccessfulUserId | cut -d _ -f 1 )
 	
 		# checks to see if we got a hit
 		if [ "$RESULT" != "" ]; then
