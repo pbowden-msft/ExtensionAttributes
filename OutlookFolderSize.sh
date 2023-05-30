@@ -2,7 +2,7 @@
 #set -x
 
 TOOL_NAME="Microsoft Outlook Local Folders Size Extension Attribute"
-TOOL_VERSION="1.1"
+TOOL_VERSION="1.2"
 
 # There are two parts to the returned value. 
 #   'Legacy' refers to the total size of local messages in legacy (aka Classic) Outlook
@@ -58,6 +58,9 @@ function GetLocalMessages() {
 function GetNewOmcMessages() {
 	NEWOMCSIZE=0
 	NEWOMCSIZE=$(/usr/bin/find ${OUTLOOK_NEW_OMC} -iname '*.eml' -ls | awk '{total += $7} END {print total}')
+	if [[ "$NEWOMCSIZE" = "" ]]; then
+		NEWOMCSIZE=0
+	fi
 	NEWOMCSIZE_MB=$(/usr/bin/awk "BEGIN {printf \"%.2f\n\", ${NEWOMCSIZE}/1000/1000}")
 }
 
